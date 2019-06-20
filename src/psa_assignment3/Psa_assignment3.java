@@ -22,7 +22,9 @@ public class Psa_assignment3 {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    static int LEAF_SIZE = 150;
+    static int leaf_size = 50;
+    public static void main(String[] args) throws IOException{
         // TODO code application logic here
         Random rand = new Random();
         ArrayList<Long> times_ijk = new ArrayList<Long>();
