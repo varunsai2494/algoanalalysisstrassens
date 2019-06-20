@@ -16,6 +16,120 @@ public class Psa_assignment3 {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        Random rand = new Random();
+        ArrayList<Long> times_ijk = new ArrayList<Long>();
+        ArrayList<Long> times_str = new ArrayList<Long>();
+        ArrayList<Integer> sizes = new ArrayList<Integer>();
+        for(int iter = 0; iter<998; iter++){
+           
+           ArrayList<ArrayList<Integer>> mat = new ArrayList<ArrayList<Integer>>();
+        
+            for(int i =0;i<iter+2;i++){
+                ArrayList<Integer> inner = new ArrayList<Integer>();
+                for(int j = 0; j<iter+2; j++){
+                    int rand_int1 = rand.nextInt(10);
+                     inner.add(rand_int1);
+                }
+                mat.add(inner);
+            }
+            ArrayList<ArrayList<Integer>> mat1 = new ArrayList<ArrayList<Integer>>();
+
+            for(int i =0;i<iter+2;i++){
+                ArrayList<Integer> inner = new ArrayList<Integer>();
+                for(int j = 0; j<iter+2; j++){
+                    int rand_int1 = rand.nextInt(10); 
+                     inner.add(rand_int1);
+                }
+                mat1.add(inner);
+            } 
+            
+            Date date = new Date();
+            long timeMilli = date.getTime();
+            int ansStr[][] = strassen(mat, mat1);
+            date = new Date();
+            long timeMilliEnd = date.getTime();
+            times_str.add(timeMilliEnd - timeMilli);
+            long ss = timeMilliEnd-timeMilli;
+            
+            sizes.add(mat.size());
+            date = new Date();
+            timeMilli = date.getTime();
+            int ansIJK[][] = ikjAlgorithm(mat, mat1);
+            date = new Date();
+            timeMilliEnd = date.getTime();
+            times_ijk.add(timeMilliEnd - timeMilli);
+            System.out.println("ikj "+String.valueOf(timeMilliEnd-timeMilli)+"   strassion :" + String.valueOf(ss) + " size : " + mat.size() );
+        }
+        
+        File file = new File("test.csv");
+        FileWriter fw = new FileWriter(file);
+        BufferedWriter bw = new BufferedWriter(fw);
+
+        bw.write("ijk,strassen");
+        bw.newLine();
+        for(int i=0;i<times_ijk.size();i++)
+        {
+            bw.write(times_ijk.get(i)+","+times_str.get(i));
+            bw.newLine();
+        }
+        
+         ArrayList<ArrayList<Integer>> m = new ArrayList<ArrayList<Integer>>();
+        for(int i =0;i<1000;i++){
+                ArrayList<Integer> inner = new ArrayList<Integer>();
+                for(int j = 0; j<1000; j++){
+                    int rand_int1 = rand.nextInt(10); 
+                     inner.add(rand_int1);
+                }
+                m.add(inner);
+            } 
+         ArrayList<ArrayList<Integer>> m2 = new ArrayList<ArrayList<Integer>>();
+        for(int i =0;i<1000;i++){
+                ArrayList<Integer> inner = new ArrayList<Integer>();
+                for(int j = 0; j<1000; j++){
+                    int rand_int1 = rand.nextInt(10); 
+                     inner.add(rand_int1);
+                }
+                m2.add(inner);
+            }
+        ArrayList<Integer> ls = new ArrayList<Integer>();
+        ArrayList<Long> to = new ArrayList<Long>();
+        for(int i =0; i< 1000; i = i+50){
+            Date date = new Date();
+            long t = date.getTime();
+            int ansStr[][] = strassen(m, m2);
+            date = new Date();
+            long t2 = date.getTime();
+            to.add(t2 - t);
+            ls.add(leaf_size);
+            leaf_size += 50;
+            
+        }
+        
+        File file1 = new File("test_for_leaf_size.csv");
+        FileWriter fw1 = new FileWriter(file1);
+        BufferedWriter bw1 = new BufferedWriter(fw1);
+
+        bw1.write("LEAF_SIZE,RunTime");
+        bw1.newLine();
+        for(int i=0;i<ls.size();i++)
+        {
+            bw1.write(ls.get(i)+","+to.get(i));
+            bw1.newLine();
+        }
+        
+       
+        
+        
+        
+        
+        
+        
+        
+        
+        bw1.close();
+        fw1.close();
+        bw.close();
+        fw.close();
     }
      public static int[][] multiply(int[][] A, int[][] B)
     {        
@@ -101,5 +215,79 @@ public class Psa_assignment3 {
             for(int j1 = 0, j2 = jB; j1 < C.length; j1++, j2++)
                 P[i2][j2] = C[i1][j1];
     }
+    
+    public static int[][] ikjAlgorithm(int[][] A, int[][] B) {
+        int n = A.length;
+
+        // initialise C
+        int[][] C = new int[n][n];
+
+        for (int i = 0; i < n; i++) {
+            for (int k = 0; k < n; k++) {
+                for (int j = 0; j < n; j++) {
+                    C[i][j] += A[i][k] * B[k][j];
+                }
+            }
+        }
+        return C;
+    }
+        
+     public static int[][] ikjAlgorithm(ArrayList<ArrayList<Integer>> A,
+            ArrayList<ArrayList<Integer>> B) {
+        int n = A.size();
+
+        // initialise C
+        int[][] C = new int[n][n];
+
+        for (int i = 0; i < n; i++) {
+            for (int k = 0; k < n; k++) {
+                for (int j = 0; j < n; j++) {
+                    C[i][j] += A.get(i).get(k) * B.get(k).get(j);
+                }
+            }
+        }
+        return C;
+    }
+
+    private static int[][] subtract(int[][] A, int[][] B) {
+        int n = A.length;
+        int[][] C = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                C[i][j] = A[i][j] - B[i][j];
+            }
+        }
+        return C;
+    }
+
+    private static int nextPowerOfTwo(int n) {
+        int log2 = (int) Math.ceil(Math.log(n) / Math.log(2));
+        return (int) Math.pow(2, log2);
+    }
+
+    public static int[][] strassen(ArrayList<ArrayList<Integer>> A,
+            ArrayList<ArrayList<Integer>> B) {
+
+        int n = A.size();
+        int m = nextPowerOfTwo(n);
+        int[][] APrep = new int[m][m];
+        int[][] BPrep = new int[m][m];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                APrep[i][j] = A.get(i).get(j);
+                BPrep[i][j] = B.get(i).get(j);
+            }
+        }
+
+        int[][] CPrep = strassenR(APrep, BPrep);
+        int[][] C = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                C[i][j] = CPrep[i][j];
+            }
+        }
+        return C;
+    }
+
     
 }
